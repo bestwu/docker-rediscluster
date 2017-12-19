@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOCKER_IP=$(ifconfig docker0 | grep 'inet addr:' | cut -d: -f2  | awk '{ print $1}')
+DOCKER_IP=$(ifconfig docker0 | grep 'inet' | cut -d: -f2  | awk '{ print $2}')
 
 echo "DOCKER IP : $DOCKER_IP"
 
@@ -29,19 +29,19 @@ echo "SENTINEL_0_IP : $SENTINEL_0_IP"
 echo "SENTINEL_1_IP : $SENTINEL_1_IP"
 echo "SENTINEL_2_IP : $SENTINEL_2_IP"
 
-redis-cli -h $REDIS_1_IP -p 6379 slaveof $REDIS_0_IP 6379
+sudo docker exec redis_0 redis-cli -h $REDIS_1_IP -p 6379 slaveof $REDIS_0_IP 6379
 
-redis-cli -p 26379 sentinel monitor testing $REDIS_0_IP 6379 2
-redis-cli -p 26379 sentinel set testing down-after-milliseconds 1000
-redis-cli -p 26379 sentinel set testing failover-timeout 1000
-redis-cli -p 26379 sentinel set testing parallel-syncs 1
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26379 sentinel monitor testing $REDIS_0_IP 6379 2
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26379 sentinel set testing down-after-milliseconds 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26379 sentinel set testing failover-timeout 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26379 sentinel set testing parallel-syncs 1
 
-redis-cli -p 26378 sentinel monitor testing $REDIS_0_IP 6379 2
-redis-cli -p 26378 sentinel set testing down-after-milliseconds 1000
-redis-cli -p 26378 sentinel set testing failover-timeout 1000
-redis-cli -p 26378 sentinel set testing parallel-syncs 1
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26378 sentinel monitor testing $REDIS_0_IP 6379 2
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26378 sentinel set testing down-after-milliseconds 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26378 sentinel set testing failover-timeout 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26378 sentinel set testing parallel-syncs 1
 
-redis-cli -p 26377 sentinel monitor testing $REDIS_0_IP 6379 2
-redis-cli -p 26377 sentinel set testing down-after-milliseconds 1000
-redis-cli -p 26377 sentinel set testing failover-timeout 1000
-redis-cli -p 26377 sentinel set testing parallel-syncs 1
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26377 sentinel monitor testing $REDIS_0_IP 6379 2
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26377 sentinel set testing down-after-milliseconds 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26377 sentinel set testing failover-timeout 1000
+sudo docker exec redis_0 redis-cli -h $DOCKER_IP -p 26377 sentinel set testing parallel-syncs 1
